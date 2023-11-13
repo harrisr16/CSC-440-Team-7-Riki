@@ -19,5 +19,12 @@
     "authentication_method": "cleartext",
     "authenticated": true,
     "password": "1234"
+  },
+  "randy": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "csc440"
   }
 }
