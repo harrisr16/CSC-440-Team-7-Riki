@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Change Password{% endblock title %}
+
+{% block content %}
+<form method="post" class="form-inline">
+    {{ form.hidden_tag() }}
+    {{ form.name(placeholder='Username', class='form-control') }}
+    {{ form.password(placeholder='Current Password', class='form-control') }}
+    {{ form.new_password(placeholder='New Password', class='form-control') }}
+    <div class="mb-2"></div>
+    <input type="submit" class="btn btn-primary mt-2" value="Submit">
+</form>
+{% endblock content %}
