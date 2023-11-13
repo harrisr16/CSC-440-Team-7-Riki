@@ -115,7 +115,6 @@ class Processor(object):
         """
         self.html = self.md.convert(self.pre)
 
-
     def split_raw(self):
         """
             Split text into raw meta and content.
@@ -165,6 +164,13 @@ class Processor(object):
 
 
 class Page(object):
+    """
+            The Page class manages the loading and saving of pages and also instantiates
+            and calls the Processor class, allowing it to render a page as well.
+
+            There are also useful helper methods for testing cases.
+    """
+
     def __init__(self, path, url, new=False):
         self.path = path
         self.url = url
@@ -239,6 +245,13 @@ class Page(object):
 
 
 class Wiki(object):
+    """
+            The Wiki class manages the direction, creation, and deletion of URLs
+            across the wiki system.
+
+            There are also useful helper methods for testing cases.
+    """
+
     def __init__(self, root):
         self.root = root
 
@@ -251,7 +264,7 @@ class Wiki(object):
 
     def get(self, url):
         path = self.path(url)
-        #path = os.path.join(self.root, url + '.md')
+        # path = os.path.join(self.root, url + '.md')
         if self.exists(url):
             return Page(path, url)
         return None
@@ -309,7 +322,7 @@ class Wiki(object):
         root = os.path.abspath(self.root)
         for cur_dir, _, files in os.walk(root):
             # get the url of the current directory
-            cur_dir_url = cur_dir[len(root)+1:]
+            cur_dir_url = cur_dir[len(root) + 1:]
             for cur_file in files:
                 path = os.path.join(cur_dir, cur_file)
                 if cur_file.endswith('.md'):
