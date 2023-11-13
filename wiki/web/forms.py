@@ -3,12 +3,12 @@
     ~~~~~
 """
 from flask_wtf import FlaskForm
-
 from wtforms import BooleanField
 from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import PasswordField
 from wtforms.validators import InputRequired
+from wtforms.validators import EqualTo
 from wtforms.validators import ValidationError
 
 from wiki.core import clean_url
@@ -56,3 +56,22 @@ class LoginForm(FlaskForm):
             return
         if not user.check_password(field.data):
             raise ValidationError('Username and password do not match.')
+
+
+class ChangePasswordForm(LoginForm):
+    new_password = PasswordField('', [InputRequired()])
+
+    def validate_new_password(self, field):
+        # Add any additional validation for the new password if needed
+        pass
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField('', validators=[InputRequired()])
+    password = PasswordField('', validators=[InputRequired()])
+    confirm_password = PasswordField('', validators=[InputRequired(), EqualTo('password')])
+
+    def validate_username(self, field):
+        user = current_users.get_user(field.data)
+        if user:
+            raise ValidationError('This username is already taken. Please choose a different one.')
