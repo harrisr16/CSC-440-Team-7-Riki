@@ -1,0 +1,1 @@
+Everything is configured to run these tests using Python's unittest module. You will need to manually update the JSON file in the content directory after running them.
