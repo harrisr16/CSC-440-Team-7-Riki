@@ -111,10 +111,7 @@ function uploadFile() {
         processData: false,
         contentType: false,
         success: function (data) {
-            // Display a success message
             alert('File was uploaded.');
-
-            // Update the src attribute of the img tag
             var imageUrl = "{{ url_for('wiki.file', filename='') }}" + data.filename;
             document.getElementById('image').src = imageUrl;
         },

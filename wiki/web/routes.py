@@ -60,16 +60,15 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def display(url):
     page = current_wiki.get_or_404(url)
 
-    # Fetch the uploaded file
     uploaded_file = None
     if page.file_id:
         gridout = fs.get(page.file_id)
         if gridout.content_type.startswith('image'):
-            # If the file is an image, embed it in the page
+
             image_url = url_for('wiki.file', filename=gridout.filename)
             page.body += f'\n<img src="{image_url}" alt="{gridout.filename}">'
         else:
-            # Otherwise, add a download link to the page
+
             file_url = url_for('wiki.file', filename=gridout.filename)
             page.body += f'\nDownload file: <a href="{file_url}" download="{gridout.filename}">{gridout.filename}</a>'
 
@@ -77,22 +76,18 @@ def display(url):
 
 
 from flask import send_file
-from io import BytesIO
+
 
 @bp.route('/image/<identifier>')
 def serve_image(identifier):
-    # Create a GridFS object
     fs = gridfs.GridFS(db)
 
     try:
-        # Try to use the identifier as a GridFS ID
         _id = ObjectId(identifier)
         grid_out = fs.get(_id)
     except:
-        # If that fails, use the identifier as a filename
         grid_out = fs.get_last_version(filename=identifier)
 
-    # Send the image data to the client
     response = send_file(grid_out, mimetype=grid_out.content_type)
     return response
 
@@ -118,7 +113,6 @@ def create():
     return render_template('create.html', form=form)
 
 
-from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -132,7 +126,7 @@ def allowed_file(filename):
 @bp.route('/edit/<path:url>/', methods=['GET', 'POST'])
 @protect
 def edit(url):
-    session['current_url'] = url  # Store the current URL in the session
+    session['current_url'] = url
     upload_form = UploadForm()
     page = current_wiki.get(url)
     form = EditorForm(obj=page)
@@ -144,14 +138,14 @@ def edit(url):
         form.populate_obj(page)
         file = form.file.data
 
-        print("Request files:", request.files)  # Print the files in the request
-        print("File:", file)  # Print the file
-        print("Form data:", form.data)  # Print the form data
+        print("Request files:", request.files)
+        print("File:", file)
+        print("Form data:", form.data)
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_id = fs.put(file, filename=filename)  # Store file in MongoDB
-            print("File ID:", file_id)  # Print the file ID
+            file_id = fs.put(file, filename=filename)
+            print("File ID:", file_id)
 
             # Read the uploaded file content
             uploaded_file = fs.get(file_id)
@@ -159,25 +153,23 @@ def edit(url):
 
             uploaded_content = uploaded_file.read().decode('utf-8')
 
-            # Add the uploaded content to the page body
+
             page.body += '\n' + uploaded_content
 
             page.file_id = file_id
             page.filepath = url_for('wiki.uploaded_file', filename=filename)
 
-        # Handle the image data
+
         image_data = form.imageData.data
         if image_data:
-            # The data URL includes a MIME type and base64 data. We only need the data.
+
             image_data = image_data.split(',', 1)[1]
             image_data = base64.b64decode(image_data)
             image_file = io.BytesIO(image_data)
 
-            # Save the image file
             image_filename = secure_filename(form.imageName.data)
             image_file_id = fs.put(image_file, filename=image_filename)
 
-            # Add the image to the page
             image_url = url_for('wiki.file', filename=image_filename)
             page.body += f'\n<img src="{image_url}" alt="{image_filename}">'
 
@@ -200,8 +192,8 @@ def upload():
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_id = fs.put(file, filename=filename)  # Store file in MongoDB
-            session['file_id'] = str(file_id)  # Convert ObjectId to string
+            file_id = fs.put(file, filename=filename)
+            session['file_id'] = str(file_id)
             flash('File was uploaded.', 'success')
 
             # Return the file ID and filename in the response
