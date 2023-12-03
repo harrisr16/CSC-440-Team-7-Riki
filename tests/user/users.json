@@ -1,0 +1,30 @@
+{
+  "name": {
+    "active": true,
+    "authentication_method": "cleartext",
+    "password": "1234",
+    "authenticated": true,
+    "roles": []
+  },
+  "sam": {
+    "active": true,
+    "authentication_method": "cleartext",
+    "password": "1234",
+    "authenticated": true,
+    "roles": []
+  },
+  "kenny": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "newtestpassword"
+  },
+  "newuser": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "newpassword"
+  }
+}
