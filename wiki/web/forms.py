@@ -4,7 +4,7 @@
 """
 from flask_wtf import FlaskForm
 
-from wtforms import BooleanField
+from wtforms import BooleanField, Form
 from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import PasswordField
@@ -14,6 +14,15 @@ from wtforms.validators import ValidationError
 from wiki.core import clean_url
 from wiki.web import current_wiki
 from wiki.web import current_users
+
+from flask_wtf import FlaskForm
+from wtforms import FileField
+from flask_wtf.file import FileRequired
+from wtforms import StringField, TextAreaField, HiddenField
+
+
+class UploadForm(FlaskForm):
+    file = FileField('Upload File', validators=[FileRequired()])
 
 
 class URLForm(FlaskForm):
@@ -39,6 +48,8 @@ class EditorForm(FlaskForm):
     title = StringField('', [InputRequired()])
     body = TextAreaField('', [InputRequired()])
     tags = StringField('')
+    file = FileField('File')
+    imageData = HiddenField('ImageData')
 
 
 class LoginForm(FlaskForm):

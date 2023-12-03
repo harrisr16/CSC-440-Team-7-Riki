@@ -7,9 +7,61 @@ from io import open
 import os
 import re
 
-from flask import abort
+from bson import ObjectId
+from flask import abort, current_app, app, Flask
 from flask import url_for
 import markdown
+
+""" upload/download feature """
+from werkzeug.utils import secure_filename
+from flask import send_file
+import os
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+import gridfs
+from flask_pymongo import PyMongo
+
+password = os.getenv('MONGODB_PASSWORD')
+uri = "mongodb+srv://wiki_user:Zion1997@myriki.vwplv3x.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['<MyRiki>']
+fs = gridfs.GridFS(db)
+
+app = Flask(__name__)
+app.config["MONGO_URI"] = uri
+mongo = PyMongo(app)
+
+'''
+collections = db.list_collection_names()
+for collection in collections:
+    # drop each collection
+    db[collection].drop()
+'''
+try:
+    client = MongoClient(uri, server_api=ServerApi('1'))
+except Exception as e:
+    print(e)
+
+
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+
+def save_file(file, filename):
+    if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+        fs = mongo.fs
+        file_id = fs.put(file, filename=filename)
+
+        # Save file information to a collection
+        files_collection = mongo.db.files
+        files_collection.insert_one({
+            'filename': filename,
+            'file_id': file_id,
+            'allowed_extensions': list(ALLOWED_EXTENSIONS),
+        })
+
+        return file_id
+    else:
+        raise ValueError('File has an unsupported extension')
 
 
 def clean_url(url):
@@ -115,7 +167,6 @@ class Processor(object):
         """
         self.html = self.md.convert(self.pre)
 
-
     def split_raw(self):
         """
             Split text into raw meta and content.
@@ -168,7 +219,9 @@ class Page(object):
     def __init__(self, path, url, new=False):
         self.path = path
         self.url = url
+        self._id = None
         self._meta = OrderedDict()
+        self._file_id = None
         if not new:
             self.load()
             self.render()
@@ -198,6 +251,43 @@ class Page(object):
             self.load()
             self.render()
 
+    @property
+    def attachments(self):
+        """
+        Get a list of attachments associated with the page.
+        """
+        files_collection = mongo.db.files
+        attachments = files_collection.find({'page_id': str(self._id)})
+        return attachments
+
+    def attach_file(self, file, filename):
+        """
+        Attach a file to the page.
+        """
+        file_id = save_file(file, filename)
+
+        # Save file information to a collection
+        files_collection = mongo.db.files
+        files_collection.insert_one({
+            'filename': filename,
+            'file_id': file_id,
+            'page_id': str(self._id),
+        })
+
+    def download_attachment(self, attachment_id):
+        """
+        Download an attachment associated with the page.
+        """
+        attachment = fs.get(ObjectId(attachment_id))
+        return send_file(attachment, as_attachment=True)
+
+    @property
+    def file_id(self):
+        return self._file_id
+
+    @file_id.setter
+    def file_id(self, value):
+        self._file_id = value
     @property
     def meta(self):
         return self._meta
@@ -251,7 +341,7 @@ class Wiki(object):
 
     def get(self, url):
         path = self.path(url)
-        #path = os.path.join(self.root, url + '.md')
+        # path = os.path.join(self.root, url + '.md')
         if self.exists(url):
             return Page(path, url)
         return None
@@ -309,7 +399,7 @@ class Wiki(object):
         root = os.path.abspath(self.root)
         for cur_dir, _, files in os.walk(root):
             # get the url of the current directory
-            cur_dir_url = cur_dir[len(root)+1:]
+            cur_dir_url = cur_dir[len(root) + 1:]
             for cur_file in files:
                 path = os.path.join(cur_dir, cur_file)
                 if cur_file.endswith('.md'):
