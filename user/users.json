@@ -2,7 +2,7 @@
   "name": {
     "active": true,
     "authentication_method": "cleartext",
-    "password": "12345",
+    "password": "123456",
     "authenticated": true,
     "roles": []
   },
@@ -75,5 +75,19 @@
     "authentication_method": "cleartext",
     "authenticated": true,
     "password": "newpassword"
+  },
+  "jo": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "jojo"
+  },
+  "zeke": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "testtesttest"
   }
 }

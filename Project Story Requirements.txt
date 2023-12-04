@@ -1,0 +1,26 @@
+Team 7 Riki Design Requirements
+Feat ID #1
+EPIC:
+As a user, I want to be able to upload files in the wiki system so that I can share resources with others.
+
+SUB:
+As a user, I want to be able to select a file from my local system so I can prepare it for upload.
+
+As a user, I want to see an error message if an issue arise in the uploading process.
+
+As a user, I want to be able to submit a file of my choosing for upload so it can be shared on Riki.
+
+As a user, I want to see a confirmation of successful upload.
+
+Feat ID #2
+EPIC:
+As a user, I want to be able to create a new account and change my password, so I can log in securely.
+
+SUB:
+As a user, I want to be able to create a new account, so that I can log into my own profile.
+
+As a user, I want to be able to change my password, so my account will be secure.
+
+As an engineer, I want the newly created user accounts to be easily accessible in users.json, so I can easily view details and debug.
+
+As a user, I want the change password feature to require my old password, so that it can't be changed by other users

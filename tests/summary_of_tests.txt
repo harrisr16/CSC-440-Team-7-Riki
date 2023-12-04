@@ -1,11 +1,10 @@
-Below is the output for the test suites:
-
 ===================================================================================== test session starts =====================================================================================
 platform win32 -- Python 3.9.13, pytest-7.4.3, pluggy-1.3.0
 rootdir: C:\Users\Randy\Riki\tests
-collected 12 items
+collected 13 items
 
-test_changepwd_and_forms_integration.py .                                                                                                                                                [  8%]
-test_password.py ....                                                                                                                                                                    [ 41%]
-test_register_and_forms_integration.py .                                                                                                                                                 [ 50%]
-test_registration.py ......                                                                                                                                                              [100%]
+test_changepwd_and_forms_integration.py .                                                                                                                                                [  7%]
+test_password.py ....                                                                                                                                                                    [ 38%]
+test_register_and_forms_integration.py .                                                                                                                                                 [ 46%]
+test_registration.py ......                                                                                                                                                              [ 92%]
+test_upload_and_forms_integration.py .                                                                                                                                                   [100%]
