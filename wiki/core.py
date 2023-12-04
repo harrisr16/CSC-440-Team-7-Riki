@@ -16,52 +16,7 @@ import markdown
 from werkzeug.utils import secure_filename
 from flask import send_file
 import os
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-import gridfs
-from flask_pymongo import PyMongo
 
-password = os.getenv('MONGODB_PASSWORD')
-uri = "mongodb+srv://wiki_user:Zion1997@myriki.vwplv3x.mongodb.net/?retryWrites=true&w=majority"
-client = MongoClient(uri, server_api=ServerApi('1'))
-db = client['<MyRiki>']
-fs = gridfs.GridFS(db)
-
-app = Flask(__name__)
-app.config["MONGO_URI"] = uri
-mongo = PyMongo(app)
-
-'''
-collections = db.list_collection_names()
-for collection in collections:
-    # drop each collection
-    db[collection].drop()
-'''
-try:
-    client = MongoClient(uri, server_api=ServerApi('1'))
-except Exception as e:
-    print(e)
-
-
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
-
-def save_file(file, filename):
-    if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
-        fs = mongo.fs
-        file_id = fs.put(file, filename=filename)
-
-        # Save file information to a collection
-        files_collection = mongo.db.files
-        files_collection.insert_one({
-            'filename': filename,
-            'file_id': file_id,
-            'allowed_extensions': list(ALLOWED_EXTENSIONS),
-        })
-
-        return file_id
-    else:
-        raise ValueError('File has an unsupported extension')
 
 
 def clean_url(url):
@@ -216,6 +171,13 @@ class Processor(object):
 
 
 class Page(object):
+    """
+            The Page class manages the loading and saving of pages and also instantiates
+            and calls the Processor class, allowing it to render a page as well.
+
+            There are also useful helper methods for testing cases.
+    """
+
     def __init__(self, path, url, new=False):
         self.path = path
         self.url = url
@@ -329,6 +291,13 @@ class Page(object):
 
 
 class Wiki(object):
+    """
+            The Wiki class manages the direction, creation, and deletion of URLs
+            across the wiki system.
+
+            There are also useful helper methods for testing cases.
+    """
+
     def __init__(self, root):
         self.root = root
 

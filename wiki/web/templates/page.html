@@ -18,15 +18,13 @@
         </div>
     </div>
     {{ page }}
-    {% if page.file_id %}
-    {% with uploaded_file=page.file %}
-        {% if uploaded_file.filename|lower|endswith('.jpg', '.jpeg', '.png') %}
-            <img src="{{ url_for('wiki.file', filename=uploaded_file.filename) }}" alt="Uploaded image">
-        {% elif uploaded_file.filename|lower|endswith('.txt', '.pdf') %}
-            <a href="{{ url_for('wiki.file', filename=uploaded_file.filename) }}">Download {{ uploaded_file.filename }}</a>
-        {% endif %}
-    {% endwith %}
-    {% endif %}
+
+    <!-- Display uploaded images -->
+    <div id="uploaded-content">
+        {% for image in images %}
+            <img src="{{ url_for('wiki.display_image', image_id=image) }}" alt="Image">
+        {% endfor %}
+    </div>d
 {% endblock content %}
 
 {% block sidebar %}
@@ -45,3 +43,4 @@
         <li><a href="#confirmDelete" data-toggle="modal" class="text-error">Delete</a></li>
     </ul>
 {% endblock sidebar %}
+

@@ -6,7 +6,7 @@ import base64
 import io
 import os
 
-from wiki.core import db
+
 import gridfs
 from bson import ObjectId
 from flask import Blueprint, Flask, render_template, url_for, send_file, current_app, flash, jsonify
@@ -24,14 +24,38 @@ from flask_pymongo import PyMongo
 from wiki.core import Processor
 from wiki.web.forms import EditorForm
 from wiki.web.forms import LoginForm
+from wiki.web.forms import RegistrationForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
 from wiki.web import current_wiki
 from wiki.web import current_users
 from wiki.web.user import protect
 
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from flask_pymongo import PyMongo
+from io import BytesIO
+from PIL import Image
+from bson.objectid import ObjectId
+
 bp = Blueprint('wiki', __name__)
 
+
+app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb+srv://wiki_user:Zion1997@myriki.vwplv3x.mongodb.net/?retryWrites=true&w=majority"
+mongo = PyMongo(app)
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+uri = "mongodb+srv://wiki_user:Zion1997@myriki.vwplv3x.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['<MyRiki>']
+collection = db["images"]
+
+collections = db.list_collection_names()
+'''
+for collection in collections:
+    # drop each collection
+    db[collection].drop()
+'''
 
 @bp.route('/')
 @protect
@@ -46,61 +70,38 @@ def home():
 @protect
 def index():
     pages = current_wiki.index()
-    return render_template('index.html', pages=pages)
-
-
-app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://wiki_user:Zion1997@myriki.vwplv3x.mongodb.net/?retryWrites=true&w=majority"
-mongo = PyMongo(app)
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    images = collection.find()
+    return render_template('index.html', images=images, pages=pages)
 
 
 @bp.route('/<path:url>/')
 @protect
 def display(url):
     page = current_wiki.get_or_404(url)
+    form = EditorForm(obj=page)
 
-    uploaded_file = None
-    if page.file_id:
-        gridout = fs.get(page.file_id)
-        if gridout.content_type.startswith('image'):
+    # Retrieve images associated with the page from MongoDB using '_id'
+    images = collection.find({"page_id": page._id})
+    image_ids = [str(image['_id']) for image in images]
 
-            image_url = url_for('wiki.file', filename=gridout.filename)
-            page.body += f'\n<img src="{image_url}" alt="{gridout.filename}">'
-        else:
+    return render_template('page.html', page=page, form=form, images=image_ids)
 
-            file_url = url_for('wiki.file', filename=gridout.filename)
-            page.body += f'\nDownload file: <a href="{file_url}" download="{gridout.filename}">{gridout.filename}</a>'
+@bp.route('/image/<image_id>')
+@protect
+def display_image(image_id):
+    # Retrieve image data from MongoDB
+    image_data = collection.find_one({"_id": ObjectId(image_id)})["image"]
 
-    return render_template('page.html', page=page)
+    # Convert binary image data to an image object
+    image = Image.open(BytesIO(image_data))
 
+    # Create a dynamic route to serve the image
+    img_io = BytesIO()
+    image.save(img_io, 'JPEG', quality=70)
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/jpeg')
 
 from flask import send_file
-
-
-@bp.route('/image/<identifier>')
-def serve_image(identifier):
-    fs = gridfs.GridFS(db)
-
-    try:
-        _id = ObjectId(identifier)
-        grid_out = fs.get(_id)
-    except:
-        grid_out = fs.get_last_version(filename=identifier)
-
-    response = send_file(grid_out, mimetype=grid_out.content_type)
-    return response
-
-@bp.route('/file/<filename>', methods=['GET'])
-@protect
-def file(filename):
-    gridout = fs.get_last_version(filename=filename)
-    if gridout:
-        return send_file(io.BytesIO(gridout.read()), mimetype=gridout.content_type, as_attachment=True,
-                         download_name=filename)
-    else:
-        flash('File not found', 'error')
-        return redirect(url_for('wiki.home'))
 
 
 @bp.route('/create/', methods=['GET', 'POST'])
@@ -144,34 +145,14 @@ def edit(url):
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_id = fs.put(file, filename=filename)
-            print("File ID:", file_id)
+            # Store image in MongoDB
+            image_data = file.read()
+            image_id = collection.insert_one({"image": image_data}).inserted_id
+            print("Image ID:", image_id)
 
-            # Read the uploaded file content
-            uploaded_file = fs.get(file_id)
-            print("Uploaded file:", uploaded_file)
-
-            uploaded_content = uploaded_file.read().decode('utf-8')
-
-
-            page.body += '\n' + uploaded_content
-
-            page.file_id = file_id
-            page.filepath = url_for('wiki.uploaded_file', filename=filename)
-
-
-        image_data = form.imageData.data
-        if image_data:
-
-            image_data = image_data.split(',', 1)[1]
-            image_data = base64.b64decode(image_data)
-            image_file = io.BytesIO(image_data)
-
-            image_filename = secure_filename(form.imageName.data)
-            image_file_id = fs.put(image_file, filename=image_filename)
-
-            image_url = url_for('wiki.file', filename=image_filename)
-            page.body += f'\n<img src="{image_url}" alt="{image_filename}">'
+            # Create image URL
+            image_url = url_for('display_image', image_id=str(image_id))
+            page.body += f'\n<img src="{image_url}" alt="{filename}">'
 
         page.save()
         flash('"%s" was saved.' % page.title, 'success')
@@ -180,26 +161,33 @@ def edit(url):
     return render_template('editor.html', upload_form=upload_form, form=form, page=page)
 
 
-from wiki.core import fs
+
 from wiki.web.forms import UploadForm
 from flask import session
 
 
 @bp.route('/upload/', methods=['POST'])
 @protect
+
 def upload():
     if 'file' in request.files:
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_id = fs.put(file, filename=filename)
-            session['file_id'] = str(file_id)
-            flash('File was uploaded.', 'success')
+            # Store image in MongoDB
+            image_data = file.read()
+            image_id = collection.insert_one({"image": image_data}).inserted_id
+            flash('Image was uploaded.', 'success')
 
-            # Return the file ID and filename in the response
-            return jsonify({'file_id': str(file_id), 'filename': filename})
+            # Return the image ID and filename in the response
+            return jsonify({'message': 'Image was uploaded successfully', 'image_id': str(image_id), 'filename': filename})
+        else:
+            flash('Unable to upload image.', 'error')
+            return jsonify({'message': 'Unable to upload image.'})
+    else:
+        flash('No file part in the request.', 'error')
+        return jsonify({'message': 'No file part in the request.'})
 
-    return redirect(url_for('wiki.edit', url=session.get('current_url', '')))
 
 @bp.route('/preview/', methods=['POST'])
 @protect
@@ -266,6 +254,61 @@ def user_login():
         flash('Login successful.', 'success')
         return redirect(request.args.get("next") or url_for('wiki.index'))
     return render_template('login.html', form=form)
+
+
+from flask import render_template, flash, redirect, url_for
+from flask_login import login_required
+from wiki.web.forms import ChangePasswordForm
+from wiki.web import current_users
+
+@bp.route('/changepass/', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+        # Assuming current_users is an instance of UserManager
+        user_manager = current_users
+
+        # Retrieve the current user
+        current_user = user_manager.get_user(form.name.data)
+
+        # Check the current password
+        if current_user.check_password(form.password.data):
+            # Change the password using UserManager methods
+            new_password = form.new_password.data
+            current_user.data['authentication_method'] = 'cleartext'
+            current_user.data['password'] = new_password
+            current_user.save()
+
+            flash('Password changed successfully.', 'success')
+            return redirect(url_for('wiki.index'))
+        else:
+            flash('Current password is incorrect.', 'danger')
+
+    return render_template('changepass.html', form=form)
+
+
+@bp.route('/register/', methods=['GET', 'POST'])
+def user_register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+        # Using current_users directly, assuming it's a UserManager instance
+        user = current_users.add_user(username, password)
+
+        if user:
+            login_user(user)
+            user.set('authenticated', True)
+            flash('Registration and login successful.', 'success')
+            return redirect(request.args.get("next") or url_for('wiki.index'))
+        else:
+            flash('Username already exists. Please choose a different one.', 'danger')
+
+    return render_template('register.html', form=form)
+
 
 
 @bp.route('/user/logout/')
