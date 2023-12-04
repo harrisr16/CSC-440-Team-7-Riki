@@ -2,14 +2,14 @@
   "name": {
     "active": true,
     "authentication_method": "cleartext",
-    "password": "1234",
+    "password": "12345",
     "authenticated": true,
     "roles": []
   },
   "sam": {
     "active": true,
     "authentication_method": "cleartext",
-    "password": "1234",
+    "password": "12345",
     "authenticated": true,
     "roles": []
   },
@@ -18,7 +18,11 @@
     "roles": [],
     "authentication_method": "cleartext",
     "authenticated": true,
+<<<<<<< HEAD
     "password": "1234"
+=======
+    "password": "newtestpassword"
+>>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
   },
   "randy": {
     "active": true,
@@ -27,11 +31,61 @@
     "authenticated": true,
     "password": "csc440"
   },
+<<<<<<< HEAD
   "joel": {
+=======
+  "test": {
+>>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
     "active": true,
     "roles": [],
     "authentication_method": "cleartext",
     "authenticated": true,
+<<<<<<< HEAD
     "password": "1234"
+=======
+    "password": "testtest2"
+  },
+  "test1": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "test1"
+  },
+  "test2": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "test"
+  },
+  "testtest": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "test"
+  },
+  "testtest1": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "test"
+  },
+  "newGuy": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "123"
+  },
+  "newuser": {
+    "active": true,
+    "roles": [],
+    "authentication_method": "cleartext",
+    "authenticated": true,
+    "password": "newpassword"
+>>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
   }
 }
