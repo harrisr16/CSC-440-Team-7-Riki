@@ -3,12 +3,8 @@
     ~~~~~
 """
 from flask_wtf import FlaskForm
-<<<<<<< HEAD
-
 from wtforms import BooleanField, Form
-=======
 from wtforms import BooleanField
->>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
 from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import PasswordField

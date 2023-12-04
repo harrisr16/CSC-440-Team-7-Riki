@@ -10,3 +10,6 @@ MarkupSafe==2.1.3
 Werkzeug==2.3.7
 WTForms==3.0.1
 pytest~=7.4.3
+bson==0.5.10
+PyMongo==4.6.1
+Flask-PyMongo==2.3.0
