@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+<<<<<<< HEAD
 SECRET_KEY = '8cb4f17efe9af6ddb8b0dcc1a23f66e58cc00f01'
 TITLE = 'Riki'
 HISTORY_SHOW_MAX = 30
@@ -9,5 +10,13 @@ PIC_BASE = '/static/content/'
 CONTENT_DIR = '/Users/joellian/Documents/Fall_2023/SWE-Cho/Riki/CSC-440-Team-7-Riki/content'
 USER_DIR = '/Users/joellian/Documents/Fall_2023/SWE-Cho/Riki/CSC-440-Team-7-Riki/user'
 
+=======
+SECRET_KEY='a unique and long key'
+TITLE='Riki' 
+HISTORY_SHOW_MAX=30
+PIC_BASE = '/static/content/'
+CONTENT_DIR = 'content'
+USER_DIR = 'user'
+>>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
 NUMBER_OF_HISTORY = 5
 PRIVATE = True

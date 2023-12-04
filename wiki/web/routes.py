@@ -24,6 +24,7 @@ from flask_pymongo import PyMongo
 from wiki.core import Processor
 from wiki.web.forms import EditorForm
 from wiki.web.forms import LoginForm
+from wiki.web.forms import RegistrationForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
 from wiki.web import current_wiki
@@ -266,6 +267,61 @@ def user_login():
         flash('Login successful.', 'success')
         return redirect(request.args.get("next") or url_for('wiki.index'))
     return render_template('login.html', form=form)
+
+
+from flask import render_template, flash, redirect, url_for
+from flask_login import login_required
+from wiki.web.forms import ChangePasswordForm
+from wiki.web import current_users
+
+@bp.route('/changepass/', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+        # Assuming current_users is an instance of UserManager
+        user_manager = current_users
+
+        # Retrieve the current user
+        current_user = user_manager.get_user(form.name.data)
+
+        # Check the current password
+        if current_user.check_password(form.password.data):
+            # Change the password using UserManager methods
+            new_password = form.new_password.data
+            current_user.data['authentication_method'] = 'cleartext'
+            current_user.data['password'] = new_password
+            current_user.save()
+
+            flash('Password changed successfully.', 'success')
+            return redirect(url_for('wiki.index'))
+        else:
+            flash('Current password is incorrect.', 'danger')
+
+    return render_template('changepass.html', form=form)
+
+
+@bp.route('/register/', methods=['GET', 'POST'])
+def user_register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+        # Using current_users directly, assuming it's a UserManager instance
+        user = current_users.add_user(username, password)
+
+        if user:
+            login_user(user)
+            user.set('authenticated', True)
+            flash('Registration and login successful.', 'success')
+            return redirect(request.args.get("next") or url_for('wiki.index'))
+        else:
+            flash('Username already exists. Please choose a different one.', 'danger')
+
+    return render_template('register.html', form=form)
+
 
 
 @bp.route('/user/logout/')
