@@ -17,7 +17,7 @@ class registrationTests(unittest.TestCase):
     def setUp(self):
         self.app = self.create_app()
         self.client = self.app.test_client()
-        self.manager = UserManager(os.path.join(os.getcwd(), 'user'))
+        self.manager = UserManager(os.path.join(os.getcwd(), 'unit/user'))
 
     def tearDown(self):
         pass
@@ -88,19 +88,19 @@ class registrationTests(unittest.TestCase):
 """
 OUTPUT FROM TESTS:
 
-/Users/Kenny/PycharmProjects/pythonProject/venv/bin/python /Applications/PyCharm.app/Contents/plugins/python/helpers/pycharm/_jb_pytest_runner.py --target registrationTests.py::registrationTests 
+/Users/Kenny/PycharmProjects/pythonProject/venv/bin/python /Applications/PyCharm.app/Contents/plugins/python/helpers/pycharm/_jb_pytest_runner.py --target testRegistration.py::registrationTests 
 Testing started at 9:25 PM ...
-Launching pytest with arguments registrationTests.py::registrationTests --no-header --no-summary -q in /Users/Kenny/PycharmProjects/pythonProject/tests
+Launching pytest with arguments testRegistration.py::registrationTests --no-header --no-summary -q in /Users/Kenny/PycharmProjects/pythonProject/tests
 
 ============================= test session starts ==============================
 collecting ... collected 6 items
 
-registrationTests.py::registrationTests::test_confirm_password_left_blank 
-registrationTests.py::registrationTests::test_password_left_blank 
-registrationTests.py::registrationTests::test_passwords_dont_match 
-registrationTests.py::registrationTests::test_user_registration_blank_username 
-registrationTests.py::registrationTests::test_user_registration_existing_username 
-registrationTests.py::registrationTests::test_user_registration_valid_credentials 
+testRegistration.py::registrationTests::test_confirm_password_left_blank 
+testRegistration.py::registrationTests::test_password_left_blank 
+testRegistration.py::registrationTests::test_passwords_dont_match 
+testRegistration.py::registrationTests::test_user_registration_blank_username 
+testRegistration.py::registrationTests::test_user_registration_existing_username 
+testRegistration.py::registrationTests::test_user_registration_valid_credentials 
 
 ======================== 6 passed, 2 warnings in 0.80s =========================
 PASSED [ 16%]PASSED [ 33%]PASSED [ 50%]PASSED [ 66%]PASSED [ 83%]PASSED [100%]

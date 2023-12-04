@@ -15,7 +15,7 @@ class PasswordTests(unittest.TestCase):
     def setUp(self):
         self.app = self.create_app()
         self.client = self.app.test_client()
-        self.manager = UserManager(os.path.join(os.getcwd(), 'user'))
+        self.manager = UserManager(os.path.join(os.getcwd(), 'unit/user'))
 
     def tearDown(self):
         pass
@@ -114,17 +114,17 @@ if __name__ == '__main__':
 """
 OUTPUT FROM TESTS:
 
-/Users/Kenny/PycharmProjects/pythonProject/venv/bin/python /Applications/PyCharm.app/Contents/plugins/python/helpers/pycharm/_jb_pytest_runner.py --path /Users/Kenny/PycharmProjects/pythonProject/tests/passwordTests.py 
+/Users/Kenny/PycharmProjects/pythonProject/venv/bin/python /Applications/PyCharm.app/Contents/plugins/python/helpers/pycharm/_jb_pytest_runner.py --path /Users/Kenny/PycharmProjects/pythonProject/tests/testPassword.py 
 Testing started at 9:24 PM ...
-Launching pytest with arguments /Users/Kenny/PycharmProjects/pythonProject/tests/passwordTests.py --no-header --no-summary -q in /Users/Kenny/PycharmProjects/pythonProject/tests
+Launching pytest with arguments /Users/Kenny/PycharmProjects/pythonProject/tests/testPassword.py --no-header --no-summary -q in /Users/Kenny/PycharmProjects/pythonProject/tests
 
 ============================= test session starts ==============================
 collecting ... collected 4 items
 
-passwordTests.py::PasswordTests::test_change_password_incorrect_password 
-passwordTests.py::PasswordTests::test_change_password_new_password_blank 
-passwordTests.py::PasswordTests::test_change_password_old_left_blank 
-passwordTests.py::PasswordTests::test_change_password_valid_credentials 
+testPassword.py::PasswordTests::test_change_password_incorrect_password 
+testPassword.py::PasswordTests::test_change_password_new_password_blank 
+testPassword.py::PasswordTests::test_change_password_old_left_blank 
+testPassword.py::PasswordTests::test_change_password_valid_credentials 
 
 ======================== 4 passed, 6 warnings in 0.56s =========================
 PASSED [ 25%]PASSED [ 50%]PASSED [ 75%]PASSED [100%]
