@@ -2,11 +2,7 @@
   "name": {
     "active": true,
     "authentication_method": "cleartext",
-<<<<<<< HEAD
     "password": "1234",
-=======
-    "password": "12345",
->>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
     "authenticated": true,
     "roles": []
   },
@@ -24,8 +20,6 @@
     "authenticated": true,
     "password": "newtestpassword"
   },
-<<<<<<< HEAD
-=======
   "newGuy": {
     "active": true,
     "roles": [],
@@ -33,12 +27,4 @@
     "authenticated": true,
     "password": "123"
   },
->>>>>>> 5dc58715918e97a042f69d101dc2c5b0d219b579
-  "newuser": {
-    "active": true,
-    "roles": [],
-    "authentication_method": "cleartext",
-    "authenticated": true,
-    "password": "newpassword"
-  }
 }
